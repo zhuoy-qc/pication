@@ -1,0 +1,1 @@
+NOTE that we found a  error in ring classification for 8VW5_A1AD4/8VW5_A1AD4_ligand.sdf, it seems this sdf file is not properly prepared as it has problem reading with RDKIT.
