@@ -6,8 +6,8 @@ import re
 import argparse
 import sys
 
-def create_comprehensive_features(interaction_csv="interactions_autobox4_ex50.csv",
-                                 results_csv="no_rmsd.csv", 
+def create_comprehensive_features(interaction_csv="all_sampled_poses_with-pi-cation-interactions.csv",
+                                 results_csv="exhaust50_detailed_results.csv", 
                                  output_file="comprehensive_features.csv"):
     """Create comprehensive features from interaction and results CSVs"""
     # Read the interaction data
