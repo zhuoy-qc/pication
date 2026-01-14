@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pandas as pd
 import re
 
@@ -41,7 +42,7 @@ for _, row in ref_df.iterrows():
     elif resid.startswith('HIS'):
         ref_by_pdb[core_id]['HIS'].add(resid)
 
-# Build predictions: group by CORE PDB ID
+# Build predictions: group by CORE PDB ID, including RMSD info
 model_by_pdb_rank = {}
 vina_by_pdb_rank = {}
 
@@ -52,22 +53,23 @@ for _, row in pred_df.iterrows():
         continue
     mr = int(row['Model_Rank'])
     vr = int(row['Vina_Rank'])
+    rmsd = float(row['RMSD'])
 
-    # Model
+    # Model: store (resid, rmsd, rank) tuple
     if mr <= 8:
         if core_id not in model_by_pdb_rank:
             model_by_pdb_rank[core_id] = {}
         if mr not in model_by_pdb_rank[core_id]:
-            model_by_pdb_rank[core_id][mr] = set()
-        model_by_pdb_rank[core_id][mr].add(resid)
+            model_by_pdb_rank[core_id][mr] = []
+        model_by_pdb_rank[core_id][mr].append((resid, rmsd, mr))
 
-    # Vina
+    # Vina: store (resid, rmsd, rank) tuple
     if vr <= 8:
         if core_id not in vina_by_pdb_rank:
             vina_by_pdb_rank[core_id] = {}
         if vr not in vina_by_pdb_rank[core_id]:
-            vina_by_pdb_rank[core_id][vr] = set()
-        vina_by_pdb_rank[core_id][vr].add(resid)
+            vina_by_pdb_rank[core_id][vr] = []
+        vina_by_pdb_rank[core_id][vr].append((resid, rmsd, vr))
 
 # Only evaluate PDBs present in reference
 common_pdbs = set(ref_by_pdb.keys()) & (set(model_by_pdb_rank.keys()) | set(vina_by_pdb_rank.keys()))
@@ -85,27 +87,64 @@ vina_ARG = [0]*4; comb_ARG = [0]*4
 vina_LYS = [0]*4; comb_LYS = [0]*4
 vina_HIS = [0]*4; comb_HIS = [0]*4
 
-def get_set(d, pdb, max_r):
-    s = set()
-    if pdb in d:
-        for r in range(1, max_r+1):
-            if r in d[pdb]:
-                s.update(d[pdb][r])
-    return s
+def get_items_up_to_rank_with_rmsd(data_dict, pdb, max_rank):
+    """Get all (resid, rmsd, rank) tuples from ranks 1 to max_rank, sorted by rank"""
+    result = []
+    if pdb in data_dict:
+        for r in range(1, max_rank + 1):
+            if r in data_dict[pdb]:
+                result.extend(data_dict[pdb][r])
+    # Sort by rank to preserve order
+    result.sort(key=lambda x: x[2])  # Sort by rank (third element)
+    return result
+
+def get_unique_poses_with_priority(all_items, target_count):
+    """
+    Select unique poses (by resid+rmsd) up to target_count, maintaining order of preference.
+    """
+    seen_poses = set()
+    selected = []
+    
+    for resid, rmsd, rank in all_items:
+        pose_key = (resid, round(rmsd, 6))  # Round to handle floating point precision
+        if pose_key not in seen_poses and len(selected) < target_count:
+            selected.append((resid, rmsd, rank))
+            seen_poses.add(pose_key)
+    
+    return {item[0] for item in selected}  # Return just the residue IDs
+
+def get_combined_2m_unique(model_dict, vina_dict, pdb, m):
+    """
+    Get exactly 2m unique poses combining from model top-m and vina top-m.
+    Prioritize model poses first, then vina poses.
+    """
+    # Get model and vina items separately
+    model_items = get_items_up_to_rank_with_rmsd(model_dict, pdb, m)
+    vina_items = get_items_up_to_rank_with_rmsd(vina_dict, pdb, m)
+    
+    # Combine: put all model items first (higher priority), then vina items
+    all_items = model_items + vina_items
+    
+    # Get unique poses up to 2*m count
+    return get_unique_poses_with_priority(all_items, 2 * m)
+
+def get_vina_k_unique(vina_dict, pdb, k):
+    """Get exactly k unique vina poses."""
+    vina_items = get_items_up_to_rank_with_rmsd(vina_dict, pdb, k)
+    return get_unique_poses_with_priority(vina_items, k)
 
 for pdb in common_pdbs:
     ref = ref_by_pdb[pdb]
     for i, (k, m) in enumerate(depths):
-        # Vina top-k
-        v_set = get_set(vina_by_pdb_rank, pdb, k)
+        # Vina top-k unique by RMSD
+        v_set = get_vina_k_unique(vina_by_pdb_rank, pdb, k)
         vina_all[i] += len(ref['all'] & v_set)
         vina_ARG[i] += len(ref['ARG'] & v_set)
         vina_LYS[i] += len(ref['LYS'] & v_set)
         vina_HIS[i] += len(ref['HIS'] & v_set)
 
-        # Combined: model top-m + vina top-m
-        c_set = get_set(model_by_pdb_rank, pdb, m)
-        c_set.update(get_set(vina_by_pdb_rank, pdb, m))
+        # Combined: exactly 2m unique poses from model top-m + vina top-m (model priority)
+        c_set = get_combined_2m_unique(model_by_pdb_rank, vina_by_pdb_rank, pdb, m)
         comb_all[i] += len(ref['all'] & c_set)
         comb_ARG[i] += len(ref['ARG'] & c_set)
         comb_LYS[i] += len(ref['LYS'] & c_set)
