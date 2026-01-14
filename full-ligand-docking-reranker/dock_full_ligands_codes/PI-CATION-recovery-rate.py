@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#output 2m poses, if duplicated model poses preferred
 import pandas as pd
 import re
 
