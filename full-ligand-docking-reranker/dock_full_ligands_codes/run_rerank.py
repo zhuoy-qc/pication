@@ -5,6 +5,7 @@ import pickle
 import re
 import argparse
 import sys
+from pathlib import Path
 
 def create_comprehensive_features(interaction_csv="all_sampled_poses_with-pi-cation-interactions.csv",
                                  results_csv="exhaust50_detailed_results.csv", 
@@ -243,8 +244,11 @@ def create_comprehensive_features(interaction_csv="all_sampled_poses_with-pi-cat
     
     return result_df
 
-def load_model_and_predict(input_csv, model_path='/data1/zyin/P-L/activat-learning/new_fine/vina_failure_finetuned_best_model.pkl'):
+def load_model_and_predict(input_csv, model_path=None):
     """Load the model and make predictions"""
+    if model_path is None:
+        model_path = Path(__file__).parent / "models" / "vina_failure_finetuned_best_model.pkl"
+    
     # Load the trained model
     with open(model_path, 'rb') as f:
         model_info = pickle.load(f)
@@ -367,7 +371,8 @@ def merge_with_interactions(predictions_df, interactions_csv='interactions_autob
 
 def main():
     parser = argparse.ArgumentParser(description='Generate features, predict, and output top results')
-    parser.add_argument('--model_path', default='/data1/zyin/P-L/activat-learning/new_fine/vina_failure_finetuned_best_model.pkl', 
+    parser.add_argument('--model_path', 
+                       default=Path(__file__).parent / "models" / "vina_failure_finetuned_best_model.pkl", 
                        help='Path to trained model file')
     parser.add_argument('--interaction_csv', default='all_sampled_poses_with-pi-cation-interactions.csv', 
                        help='Path to interactions CSV file')
