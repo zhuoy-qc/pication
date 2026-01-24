@@ -372,7 +372,7 @@ def merge_with_interactions(predictions_df, interactions_csv='interactions_autob
 def main():
     parser = argparse.ArgumentParser(description='Generate features, predict, and output top results')
     parser.add_argument('--model_path', 
-                       default=Path(__file__).parent / "models" / "vina_failure_finetuned_best_model.pkl", 
+                       default=Path(__file__).parent / "trained_models" / "reranker_model_new.pkl", 
                        help='Path to trained model file')
     parser.add_argument('--interaction_csv', default='all_sampled_poses_with-pi-cation-interactions.csv', 
                        help='Path to interactions CSV file')
