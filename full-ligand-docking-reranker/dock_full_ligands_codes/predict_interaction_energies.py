@@ -21,8 +21,7 @@ import shutil
 import warnings
 from functools import partial
 
-# ==================== 🔑 CONFIGURE MODEL PATHS HERE ====================
-# ⚠️ UPDATE THESE TO YOUR ACTUAL MODEL LOCATIONS
+# ==================== USED MODEL PATHS ====================
 STANDARD_MODEL_PATH = Path(__file__).parent / "trained_models" / "non-ARG_energy_prediction_model.pkl"   
 ARG_MODEL_PATH = Path(__file__).parent / "trained_models" / "ARG_pi_interaction_energy_predictor.pkl"         
 # =====================================================================
