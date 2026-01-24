@@ -23,8 +23,8 @@ from functools import partial
 
 # ==================== 🔑 CONFIGURE MODEL PATHS HERE ====================
 # ⚠️ UPDATE THESE TO YOUR ACTUAL MODEL LOCATIONS
-STANDARD_MODEL_PATH = "/home/zyin/final_model_20250919_025353.pkl"   
-ARG_MODEL_PATH = "/home/zyin/final_model_ARG_optimized.pkl"         
+STANDARD_MODEL_PATH = Path(__file__).parent / "models" / "final_model_20250919_025353.pkl"   
+ARG_MODEL_PATH = Path(__file__).parent / "models" / "final_model_ARG_optimized.pkl"         
 # =====================================================================
 
 # Filter warnings
