@@ -16,7 +16,7 @@ model = joblib.load(model_path)
 
 # Load the data
 df = pd.read_csv('cleaned.csv')
-# Rename 'angle' to 'dihedral_angle' to match the model's expected feature names
+# Rename 'angle' to 'dihedral_angle' to match the model's expected feature names, actually angle is used 
 X = df[['delta_z', 'delta_x', 'angle', 'distance']].copy()
 X.rename(columns={'angle': 'dihedral_angle'}, inplace=True)
 y = df['final_energy']
