@@ -29,9 +29,6 @@ Run the following scripts in that directory:
 python pi-cation-analysis.py, which finds all pi-cation interactions and list the distance,offset,Rz of these interactions.
 python 1_sampling.py
 
-NOTE THAT when running the sampling.py, you can change a few lines, namely scoring functional, supporting : vinardo, vina, default.
-
-
 python 2_model.py
 
 
@@ -50,6 +47,6 @@ The analysis codes include:
 
 Compute Recovery rate for π-cation interactions
 
-Structural error metrics
+Structural error metrics (RMSD)
 
 
