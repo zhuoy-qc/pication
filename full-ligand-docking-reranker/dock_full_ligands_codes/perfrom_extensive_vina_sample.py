@@ -18,7 +18,7 @@ def process_single_directory(dir_path):
     full_dir_name = dir_path.name  # e.g., "7Q5I_I0F"
 
     protein_file = dir_path / f"{full_dir_name}_protein_protonated.pdb"
-    ligand_start_file = dir_path / f"{full_dir_name}_ligand_start_conf.sdf"
+    ligand_start_file = dir_path / f"{full_dir_name}_ligand.sdf"
     ligand_autobox_file = dir_path / f"{full_dir_name}_ligand.sdf"
     output_file = dir_path / "exhaust50_dock.sdf"  # Changed output file name
 
