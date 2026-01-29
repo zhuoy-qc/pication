@@ -85,7 +85,7 @@ def find_protein_files(directory):
     for raw_protein in raw_protein_files:
         if "only" in os.path.basename(raw_protein).lower():
             continue
-        base_name = os.path.basename(raw_protein).replace('_protein.pdb', '')
+        base_name = os.path.basename(raw_protein).replace('_protein_protanated.pdb', '')
         only_protein_file = os.path.join(directory, f"{base_name}_only_protein.pdb")
         logger.info(f"   Generating {os.path.basename(only_protein_file)} from {os.path.basename(raw_protein)}")
         result = clean_pdb(raw_protein, only_protein_file)
