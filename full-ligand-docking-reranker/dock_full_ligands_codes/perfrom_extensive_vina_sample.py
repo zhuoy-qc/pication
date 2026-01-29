@@ -34,7 +34,7 @@ def process_single_directory(dir_path):
         "--exhaustiveness", "50",
         "-o", "exhaust50_dock.sdf",  # output file name
         "--autobox_add", "8",
-        "--seed", "1"
+        "--seed", "42"
     ]
 
     try:
