@@ -80,12 +80,12 @@ def find_protein_files(directory):
         logger.info(f"   Found {len(protein_files)} existing only_protein files in {os.path.basename(directory)}")
         return protein_files
 
-    raw_protein_files = glob.glob(os.path.join(directory, "*_protein_protanated.pdb"))
+    raw_protein_files = glob.glob(os.path.join(directory, "*_protein_protonated.pdb"))
     generated_files = []
     for raw_protein in raw_protein_files:
         if "only" in os.path.basename(raw_protein).lower():
             continue
-        base_name = os.path.basename(raw_protein).replace('_protein_protanated.pdb', '')
+        base_name = os.path.basename(raw_protein).replace('_protein_protonated.pdb', '')
         only_protein_file = os.path.join(directory, f"{base_name}_only_protein.pdb")
         logger.info(f"   Generating {os.path.basename(only_protein_file)} from {os.path.basename(raw_protein)}")
         result = clean_pdb(raw_protein, only_protein_file)
