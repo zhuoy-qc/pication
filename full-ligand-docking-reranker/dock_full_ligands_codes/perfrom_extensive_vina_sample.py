@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 
 def get_pdb_id_from_dir_name(dir_path):
-    """Extract PDB ID from directory name (first 4 characters)"""
     dir_name = dir_path.name  # Use .name instead of rstrip('/')
     if len(dir_name) >= 4:
         return dir_name[:4]
@@ -22,8 +21,6 @@ def process_single_directory(dir_path):
     ligand_autobox_file = dir_path / f"{full_dir_name}_ligand.sdf"
     output_file = dir_path / "exhaust50_dock.sdf"  # Changed output file name
 
-
-    # Run smina command with additional parameters
     cmd = [
         "smina",
         "-r", f"{full_dir_name}_protein_protonated.pdb",
@@ -58,7 +55,6 @@ def process_single_directory(dir_path):
     }
 
 def main():
-    # Get all directories at depth=1 from current directory
     current_dir = Path('.')
     depth1_dirs = [d for d in current_dir.iterdir() if d.is_dir()]
 
@@ -71,7 +67,6 @@ def main():
         if result is not None:
             results.append(result)
 
-    # Print final summary
     print("\n" + "="*70)
     print("FINAL SUMMARY")
     print("="*70)
@@ -80,7 +75,7 @@ def main():
         print(f"  Status: {'Success' if result['success'] else 'Failed'}")
         print("-" * 50)
 
-    # Save results to a single text file
+
     with open("autobox4_results_summary.txt", "w") as f:
         f.write("EXHAUST50 DOCKING RESULTS SUMMARY\n")
         f.write("="*70 + "\n")
