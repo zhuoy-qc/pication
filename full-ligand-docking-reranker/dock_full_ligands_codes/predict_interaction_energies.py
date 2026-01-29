@@ -80,7 +80,7 @@ def find_protein_files(directory):
         logger.info(f"   Found {len(protein_files)} existing only_protein files in {os.path.basename(directory)}")
         return protein_files
 
-    raw_protein_files = glob.glob(os.path.join(directory, "*_protein.pdb"))
+    raw_protein_files = glob.glob(os.path.join(directory, "*_protein_protanated.pdb"))
     generated_files = []
     for raw_protein in raw_protein_files:
         if "only" in os.path.basename(raw_protein).lower():
